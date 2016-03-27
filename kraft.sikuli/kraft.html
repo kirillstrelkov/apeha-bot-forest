@@ -1,0 +1,1673 @@
+
+<html>
+   <head>
+      <style type="text/css">
+         .sikuli-code {
+            font-size: 20px;
+            font-family: "Osaka-mono", Monospace;
+            line-height: 1.5em;
+            display:table-cell;
+            white-space: pre-wrap;       /* css-3 */
+            white-space: -moz-pre-wrap !important;  /* Mozilla, since 1999 */
+            white-space: -pre-wrap;      /* Opera 4-6 */
+            white-space: -o-pre-wrap;    /* Opera 7 */
+            word-wrap: break-word;       /* Internet Explorer 5.5+ */
+            width: 99%;   /* remove horizontal scroll-bar when viewing in IE7 */
+         }
+         .sikuli-code img {
+            vertical-align: middle;
+            margin: 2px;
+            border: 1px solid #ccc;
+            padding: 2px;
+            -moz-border-radius: 5px;
+            -webkit-border-radius: 5px;
+            -moz-box-shadow: 1px 1px 1px gray;
+            -webkit-box-shadow: 1px 1px 2px gray;
+         }
+         .kw {
+            color: blue;
+         }
+         .skw {
+            color: rgb(63, 127, 127);
+         }
+
+         .str {
+            color: rgb(128, 0, 0);
+         }
+
+         .dig {
+            color: rgb(128, 64, 0);
+         }
+
+         .cmt {
+            color: rgb(200, 0, 200);
+         }
+
+         h2 {
+            display: inline;
+            font-weight: normal;
+         }  
+         
+         .info {
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+            margin-bottom: 20px;
+            display: none;
+         }
+
+         a {
+            color: #9D2900;
+         }
+
+         body {
+            font-family: "Trebuchet MS", Arial, Sans-Serif;
+         }
+
+      </style>
+   </head>
+<body>
+<div class="info">
+<h2>mysik.sikuli</h2> <a href="mysik.zip">(Download this script)</a>
+</div>
+<pre class="sikuli-code">
+<span class="kw">import</span> math
+<span class="kw">import</span> random
+<span class="kw">import</span> traceback
+
+<span class="kw">from</span> time <span class="kw">import</span> time, <span class="skw">sleep</span>, strftime
+
+<span class="cmt">#from org.sikuli.script.natives import Vision
+</span>
+<span class="cmt"># Sikuli Settings
+</span>Settings.MoveMouseDelay = <span class="dig">0.01</span>
+<span class="cmt">#Vision.setParameter("MinTargetSize", 8)
+</span>
+
+<span class="kw">class</span> Images(object):
+    <span class="cmt"># Images and patterns
+</span>    SEARCH_TIMER = Pattern(<img src="searching.png" />).similar(<span class="dig">0.98</span>)
+    SEARCH = Pattern(<img src="search.png" />).similar(<span class="dig">0.96</span>)
+    NOTHING_WAS_FOUND = Pattern(<img src="HmeroHeHaneH.png" />).similar(<span class="dig">0.91</span>)
+    OK = Pattern(<img src="ok-1.png" />).similar(<span class="dig">0.80</span>)
+    MAIN_WINDOW = Pattern(<img src="1387646093669.png" />).similar(<span class="dig">0.93</span>)
+
+    <span class="cmt"># OAKES
+</span>    OAK_IN_5_STEPS = <span class="str">""</span>
+    OAK_IN_FRONT = Pattern(<img src="1399797623467.png" />).similar(<span class="dig">0.71</span>)
+    OAK_ON_LEFT = Pattern(<img src="1399797814160.png" />).similar(<span class="dig">0.71</span>)
+    OAK_ON_RIGHT = Pattern(<img src="1399798089279.png" />).similar(<span class="dig">0.71</span>)
+
+    OAK_TREE = Pattern(<img src="1399800567248.png" />).similar(<span class="dig">0.95</span>)
+    OAK_TREE2 = Pattern(<img src="1399800631560.png" />).similar(<span class="dig">0.94</span>)
+    OAK_TREE3 = Pattern(<img src="1399800657439.png" />).similar(<span class="dig">0.94</span>)
+
+    <span class="cmt"># PINES
+</span>    PINE_IN_5_STEPS = Pattern(<img src="1387714750295.png" />).similar(<span class="dig">0.42</span>)
+    PINE_IN_FRONT = Pattern(<img src="COCHanpMOnep.png" />).similar(<span class="dig">0.89</span>)
+    PINE_ON_LEFT = Pattern(<img src="1391623582480.png" />).similar(<span class="dig">0.78</span>)
+    PINE_ON_RIGHT = Pattern(<img src="1391623760333.png" />).similar(<span class="dig">0.75</span>)
+
+    PINE_TREE = Pattern(<img src="1391860017664.png" />).similar(<span class="dig">0.90</span>)
+    PINE_TREE2 = Pattern(<img src="1391859761283.png" />).similar(<span class="dig">0.85</span>)
+    PINE_TREE3 = Pattern(<img src="1391859902379.png" />).similar(<span class="dig">0.85</span>)
+
+    NEED_AN_AXE = Pattern(<img src="1391335212591.png" />).similar(<span class="dig">0.93</span>)
+    CRAFT_TIMER = Pattern(<img src="1387715184524.png" />).similar(<span class="dig">0.98</span>)
+    CRAFT = Pattern(<img src="1387715339871.png" />).similar(<span class="dig">0.96</span>)
+
+    MY_GROUP = Pattern(<img src="1390136004844.png" />).similar(<span class="dig">0.51</span>)
+    WALK = Pattern(<img src="1390136065333.png" />).similar(<span class="dig">0.89</span>)
+
+    ARROW = Pattern(<img src="1390247010387.png" />).similar(<span class="dig">0.92</span>)
+
+    N = <img src="1390142208550.png" />
+    S = <img src="1390144256662.png" />
+    NE = <img src="1390144318608.png" />
+    SE = <img src="1390144334702.png" />
+    NW = <img src="1390144358230.png" />
+    SW = <img src="1390144374870.png" />
+
+    NW_POINT = Pattern(<img src="1390144834918.png" />).similar(<span class="dig">0.91</span>)
+    NE_POINT = Pattern(<img src="1390144864670.png" />).similar(<span class="dig">0.90</span>)
+    SW_POINT = Pattern(<img src="1390144910454.png" />).similar(<span class="dig">0.90</span>)
+    SE_POINT = Pattern(<img src="1390144940646.png" />).similar(<span class="dig">0.80</span>)
+    ROAD_PAVEMENT = Pattern(<img src="1390939645513.png" />).similar(<span class="dig">0.86</span>)
+    AXE = Pattern(<img src="1391327999943.png" />).similar(<span class="dig">0.95</span>)
+    BACKPACK = Pattern(<img src="1391328559159.png" />).similar(<span class="dig">0.90</span>)
+    BP_TOOLS = Pattern(<img src="1391328620252.png" />).similar(<span class="dig">0.97</span>)
+    BP_PUT = Pattern(<img src="1391328736039.png" />).similar(<span class="dig">0.94</span>)
+    TRANSPARENCY_OFF = Pattern(<img src="1391859323067.png" />).similar(<span class="dig">0.95</span>)
+    TRANSPARENCY_ON = Pattern(<img src="1391859300044.png" />).similar(<span class="dig">0.95</span>)
+    OK_LIGHTBOX_BORDER_H = Pattern(<img src="1391941926753.png" />).similar(<span class="dig">0.78</span>)
+    OK_LIGHTBOX_BORDER_W = Pattern(<img src="1391942228532.png" />).similar(<span class="dig">0.78</span>)
+
+    FOREST_ERROR = Pattern(<img src="1390654120149.png" />).similar(<span class="dig">0.91</span>)
+
+<span class="str">"""
+    Exceptions
+"""</span>
+<span class="kw">class</span> CraftException(Exception):
+    <span class="kw">pass</span>
+
+
+<span class="kw">class</span> UnknownDirectionException(CraftException):
+    <span class="kw">pass</span>
+
+
+<span class="kw">class</span> ImageNotFound(CraftException):
+    <span class="kw">pass</span>
+
+
+<span class="kw">class</span> Point(object):
+    <span class="kw">def</span> __init__(self, x, y):
+        self.x = int(x)
+        self.y = int(y)
+
+    <span class="kw">def</span> __ne__(self, other):
+        <span class="kw">return</span> <span class="kw">not</span> self.__eq__(other)
+
+    <span class="kw">def</span> __eq__(self, other):
+        <span class="kw">return</span> other.x == self.x <span class="kw">and</span> other.y == self.y
+
+    <span class="kw">def</span> __str__(self):
+        <span class="kw">return</span> <span class="str">"Point(%d, %d)"</span> % (self.x, self.y)
+
+
+<span class="kw">class</span> SearchStatus(object):
+    PINE_IN_5_STEPS = <span class="str">"Tree is in 5 steps"</span>
+    PINE_IN_FRONT = <span class="str">"Tree is in front"</span>
+    PINE_ON_THE_RIGHT = <span class="str">"Tree is on the right"</span>
+    PINE_ON_THE_LEFT = <span class="str">"Tree is on the left"</span>
+
+    OAK_IN_5_STEPS = <span class="str">"Oak is in 5 steps"</span>
+    OAK_IN_FRONT = <span class="str">"Oak is in front"</span>
+    OAK_ON_THE_RIGHT = <span class="str">"Oak is on the right"</span>
+    OAK_ON_THE_LEFT = <span class="str">"Oak is on the left"</span>
+
+
+<span class="kw">class</span> Constants(object):
+    MAIN_WINDOW_WIDTH = <span class="dig">480</span>
+    MAIN_WINDOW_HEIGHT = <span class="dig">310</span>
+
+    ARROW_TRUE_HEIGHT = <span class="dig">17</span>
+    HEIGHT_BETWEEN_ARROW_AND_PLAYER = <span class="dig">7</span>
+    PLAYER_TRUE_HEIGHT = <span class="dig">62</span>
+    PLAYER_TRUE_WIDTH = <span class="dig">19</span>
+
+    PLAYER_HEIGHT = <span class="dig">72</span>
+    PLAYER_WIDTH = <span class="dig">35</span>
+    Y_OFFSET = <span class="dig">40</span>
+
+    LEFT = <span class="str">"Left"</span>
+    RIGHT = <span class="str">"Right"</span>
+
+
+<span class="kw">class</span> Resources(object):
+    PINES = [Images.PINE_TREE, Images.PINE_TREE2, Images.PINE_TREE3]
+    OAKS = [Images.OAK_TREE, Images.OAK_TREE2, Images.OAK_TREE3]
+    ALL_TREES = PINES + OAKS
+
+
+<span class="kw">class</span> Direction(object):
+    N = <span class="str">'North'</span>
+    S = <span class="str">'South'</span>
+    W = <span class="str">'West'</span>
+    E = <span class="str">'East'</span>
+    NW = <span class="str">'North-West'</span>
+    SW = <span class="str">'South-West'</span>
+    NE = <span class="str">'North-East'</span>
+    SE = <span class="str">'South-East'</span>
+
+    @classmethod
+    <span class="kw">def</span> get_all_players_directions(cls):
+        <span class="kw">return</span> [cls.N, cls.NE, cls.SE, cls.S, cls.SW, cls.NW]
+
+    @classmethod
+    <span class="kw">def</span> get_all_directions(cls):
+        <span class="kw">return</span> [cls.N, cls.NE, cls.E, cls.SE, cls.S, cls.SW, cls.W, cls.NW]
+
+    @classmethod
+    <span class="kw">def</span> get_opposite_direction(cls, direction):
+        opposite = None
+        <span class="kw">if</span> cls.N == direction:
+            opposite = cls.S
+        <span class="kw">elif</span> cls.S == direction:
+            opposite = cls.N
+        <span class="kw">elif</span> cls.NW == direction:
+            opposite = cls.SE
+        <span class="kw">elif</span> cls.NE == direction:
+            opposite = cls.SW
+        <span class="kw">elif</span> cls.SE == direction:
+            opposite = cls.NW
+        <span class="kw">elif</span> cls.SW == direction:
+            opposite = cls.NE
+
+        <span class="kw">if</span> opposite:
+            <span class="kw">return</span> opposite
+        <span class="kw">else</span>:
+            <span class="kw">raise</span> UnknownDirectionException
+
+    @classmethod
+    <span class="kw">def</span> get_random_direction(cls, directions=None, skip=None):
+        <span class="kw">if</span> <span class="kw">not</span> directions:
+            directions = cls.get_all_directions()
+        <span class="kw">if</span> skip:
+            directions = [d <span class="kw">for</span> d <span class="kw">in</span> directions <span class="kw">if</span> d <span class="kw">not</span> <span class="kw">in</span> skip]
+        <span class="kw">return</span> random.choice(directions)
+
+DIRECTION_2_POINT = {
+    Direction.NW: Images.NW_POINT,
+    Direction.SW: Images.SW_POINT,
+    Direction.NE: Images.NE_POINT,
+    Direction.SE: Images.SE_POINT,
+    Direction.N: Images.NW_POINT,
+    Direction.S: Images.SW_POINT,
+    Direction.W: Images.NW_POINT,
+    Direction.E: Images.NE_POINT,
+}
+
+PLAYER_DIRECTIONS = {
+    Images.N: Direction.N,
+    Images.NE: Direction.NE,
+    Images.SE: Direction.SE,
+    Images.S: Direction.S,
+    Images.SW: Direction.SW,
+    Images.NW: Direction.NW
+}
+
+
+DEBUG = True
+<span class="cmt"># DEBUG = False
+</span>
+
+<span class="str">"""
+    Logger
+"""</span>
+<span class="kw">class</span> Logger(object):
+    <span class="kw">def</span> log(self, *msgs):
+        <span class="kw">if</span> DEBUG:
+            msg = <span class="str">"%s: %s"</span> % (strftime(<span class="str">"%Y%m%d%H%M%S"</span>),
+                              <span class="str">" "</span>.join([str(msg) <span class="kw">for</span> msg <span class="kw">in</span> msgs]))
+            <span class="kw">print</span> msg
+
+
+<span class="str">"""
+    Wrappers
+"""</span>
+<span class="kw">def</span> expection_wrapper(func):
+
+    <span class="kw">def</span> wrapper(*args, **kwargs):
+        <span class="kw">def</span> check_if_flash_error(e):
+            <span class="kw">def</span> is_flash_error():
+                <span class="kw">return</span> exists(Images.FOREST_ERROR, <span class="dig">1</span>)
+
+            <span class="kw">def</span> is_window_exists():
+                <span class="kw">return</span> exists(Images.MAIN_WINDOW, <span class="dig">1</span>)
+
+            <span class="kw">if</span> is_flash_error() <span class="kw">and</span> <span class="kw">not</span> is_window_exists():
+                <span class="kw">while</span>(is_flash_error() <span class="kw">and</span> <span class="kw">not</span> is_window_exists()):
+                    <span class="skw">sleep</span>(<span class="dig">1</span>)
+
+                <span class="kw">try</span>:
+                    <span class="kw">return</span> func(*args, **kwargs)
+                <span class="kw">except</span> FindFailed, e:
+                    <span class="kw">raise</span> ImageNotFound(<span class="str">"Image not found"</span> + str(e))
+            <span class="kw">else</span>:
+                <span class="kw">raise</span> ImageNotFound(<span class="str">"Image not found"</span> + str(e))
+
+        <span class="kw">try</span>:
+            <span class="kw">return</span> func(*args, **kwargs)
+        <span class="kw">except</span> FindFailed, e:
+            check_if_flash_error(e)
+        <span class="kw">except</span> ImageNotFound, e:
+            check_if_flash_error(e)
+
+    <span class="kw">return</span> wrapper
+
+
+<span class="kw">def</span> logging_wrapper(func):
+    <span class="kw">def</span> wrapper(*args, **kwargs):
+        value = None
+        <span class="kw">if</span> DEBUG:
+            logger = Logger()
+            s_args = <span class="str">", "</span>.join([str(arg) <span class="kw">for</span> arg <span class="kw">in</span> args])
+            s_kwargs = <span class="str">", "</span>.join([str(arg) <span class="kw">for</span> arg <span class="kw">in</span> kwargs])
+            logger.log(<span class="str">"* EXECUTE: %s(%s, %s)"</span> % (func.func_name,
+                                                  s_args,
+                                                  s_kwargs))
+            before = time()
+            value = func(*args, **kwargs)
+            after = time()
+            exec_time = after-before
+            logger.log(<span class="str">"* RETURN:  %s -&gt; %s exec_time: %s"</span> % (func.func_name,
+                                                             value,
+                                                             exec_time))
+        <span class="kw">else</span>:
+            value = func(*args, **kwargs)
+        <span class="kw">return</span> value
+    <span class="kw">return</span> wrapper
+
+
+<span class="kw">class</span> Timeout(object):
+    EXISTS = <span class="dig">1</span>
+
+<span class="str">"""
+    Sikuli actions
+"""</span>
+<span class="kw">class</span> Sikuli(object):
+    KEY_UP = Key.UP
+    KEY_DOWN = Key.DOWN
+    KEY_LEFT = Key.LEFT
+    KEY_RIGHT = Key.RIGHT
+    KEY_END = Key.END
+    KEY_PAGE_DOWN = Key.PAGE_DOWN
+    KEY_CTRL = Key.CTRL
+    KEY_F5 = Key.F5
+
+    <span class="kw">def</span> <span class="skw">capture</span>(self, x, y, w, h):
+        <span class="kw">return</span> Pattern(Screen().<span class="skw">capture</span>(x,y,w,h)).similar(<span class="dig">0.99</span>)
+
+    <span class="kw">def</span> <span class="skw">type</span>(self, text):
+        <span class="skw">type</span>(text)
+
+    @expection_wrapper
+    <span class="kw">def</span> type_to_image(self, image, text):
+        <span class="skw">type</span>(image, text)
+
+    @expection_wrapper
+    <span class="kw">def</span> <span class="skw">find</span>(self, image):
+        <span class="kw">return</span> <span class="skw">find</span>(image)
+
+    @expection_wrapper
+    <span class="kw">def</span> get_pattern(self, image):
+        <span class="kw">return</span> Pattern(image)
+
+    @expection_wrapper
+    <span class="kw">def</span> find_all(self, image):
+        finder = findAll(image)
+        images = []
+        <span class="kw">while</span>(finder.hasNext()):
+            images.append(finder.next())
+        <span class="kw">return</span> images
+
+    @expection_wrapper
+    <span class="kw">def</span> <span class="skw">click</span>(self, image):
+        <span class="skw">click</span>(image)
+
+    <span class="kw">def</span> wait_for_not_visible(self, image):
+        waitVanish(image)
+
+    @expection_wrapper
+    <span class="kw">def</span> double_click(self, image):
+        <span class="skw">doubleClick</span>(image)
+
+    @expection_wrapper
+    <span class="kw">def</span> hover(self, image):
+        hover(image)
+
+    @expection_wrapper
+    <span class="kw">def</span> _set_target_offset(self, image, point):
+        <span class="kw">try</span>:
+            <span class="kw">print</span> <span class="str">"-"</span>*<span class="dig">50</span>
+            <span class="kw">print</span> image
+            <span class="kw">if</span> isinstance(image, Match):
+                target = image.getTarget()
+            <span class="kw">elif</span> isinstance(image, Pattern):
+                image = self.get_pattern(image)
+                target = self.<span class="skw">find</span>(image).getTarget()
+            <span class="kw">else</span>:
+                <span class="kw">raise</span> Exception(<span class="str">'Passed argument is not supported - %s'</span> % image)
+
+            <span class="kw">print</span> target.x,target.y
+            <span class="kw">print</span> Location(target.x + point.x, target.y + point.y)
+            <span class="kw">print</span> <span class="str">"*"</span>*<span class="dig">50</span>
+            <span class="kw">return</span> Location(target.x + point.x, target.y + point.y)
+        <span class="kw">except</span> Exception, e:
+            self.log(e)
+            <span class="kw">print</span> <span class="str">"+"</span>*<span class="dig">50</span>
+            <span class="kw">raise</span> ImageNotFound
+
+    @expection_wrapper
+    <span class="kw">def</span> _hover_by_offset(self, image, point):
+        image = self._set_target_offset(image, point)
+        hover(image)
+
+    <span class="kw">def</span> refresh(self):
+        <span class="kw">if</span> self.exists(Images.AXE):
+            self.<span class="skw">click</span>(Images.AXE)
+        <span class="skw">type</span>(self.KEY_F5)
+
+    <span class="kw">def</span> _click_by_offset(self, image, point):
+        image = self._set_target_offset(image, point)
+        self.<span class="skw">click</span>(image)
+
+    <span class="kw">def</span> _double_click_by_offset(self, image, point):
+        image = self._set_target_offset(image, point)
+        self.double_click(image)
+
+    <span class="kw">def</span> exists(self, image):
+        <span class="kw">return</span> exists(image, Timeout.EXISTS) <span class="kw">is</span> <span class="kw">not</span> None
+
+    <span class="kw">def</span> _click_and_not_visible(self, image):
+        <span class="kw">for</span> _ <span class="kw">in</span> range(<span class="dig">5</span>):
+            <span class="kw">try</span>:
+                <span class="kw">if</span> self.exists(image):
+                    self.<span class="skw">click</span>(image)
+
+                <span class="kw">if</span> <span class="kw">not</span> self.exists(image):
+                    <span class="kw">return</span> True
+            <span class="kw">except</span> ImageNotFound, e:
+                self.log(<span class="str">"Exception"</span>, e)
+            <span class="kw">finally</span>:
+                <span class="skw">sleep</span>(<span class="dig">0.1</span>)
+
+        <span class="kw">return</span> False
+
+    @expection_wrapper
+    <span class="kw">def</span> _click(self, image_before, image_after):
+        <span class="kw">for</span> _ <span class="kw">in</span> range(<span class="dig">5</span>):
+            <span class="kw">try</span>:
+                <span class="kw">if</span> self.exists(image_before):
+                    self.<span class="skw">click</span>(image_before)
+                <span class="kw">if</span> <span class="kw">not</span> self.exists(image_before) <span class="kw">and</span> self.exists(image_after):
+                    <span class="kw">return</span> True
+            <span class="kw">except</span> ImageNotFound:
+                <span class="kw">pass</span>
+            <span class="kw">finally</span>:
+                <span class="skw">sleep</span>(<span class="dig">0.1</span>)
+        <span class="kw">return</span> False
+
+    <span class="kw">def</span> _mouse_wheel_up(self, image, times):
+        region = self.<span class="skw">find</span>(image)
+        region.wheel(WHEEL_UP, times)
+
+    <span class="kw">def</span> _mouse_wheel_down(self, image, times):
+        region = self.<span class="skw">find</span>(image)
+        region.wheel(WHEEL_DOWN, times)
+
+    @expection_wrapper
+    <span class="kw">def</span> <span class="skw">wait</span>(self, image, timeout=None):
+        <span class="kw">if</span> timeout:
+            <span class="skw">wait</span>(image, timeout)
+        <span class="kw">else</span>:
+            <span class="skw">wait</span>(image)
+
+
+<span class="str">"""
+    ApehaFlash
+"""</span>
+<span class="kw">class</span> ApehaFlash(Sikuli, Logger):
+    @logging_wrapper
+    <span class="kw">def</span> capture_player(self):
+        center_point = self.get_screen_center_point()
+        width = Constants.PLAYER_WIDTH * <span class="dig">6</span>
+        height = Constants.PLAYER_TRUE_HEIGHT
+        start_x = center_point.x - width / <span class="dig">2</span>
+        start_y = center_point.y - Constants.PLAYER_TRUE_HEIGHT - \
+                    Constants.HEIGHT_BETWEEN_ARROW_AND_PLAYER - \
+                    Constants.HEIGHT_BETWEEN_ARROW_AND_PLAYER
+        <span class="kw">return</span> self.<span class="skw">capture</span>(start_x, start_y, width, height)
+
+    @logging_wrapper
+    <span class="kw">def</span> _shake_screen(self):
+        offset = <span class="dig">5</span>
+        self.<span class="skw">click</span>(Images.MAIN_WINDOW)
+        self._mouse_wheel_down(Images.MAIN_WINDOW, offset)
+        self._mouse_wheel_up(Images.MAIN_WINDOW, offset)
+        self._mouse_wheel_down(Images.MAIN_WINDOW, offset)
+
+    @logging_wrapper
+    <span class="kw">def</span> get_target(self, sth):
+        <span class="kw">if</span> <span class="str">'getTarget'</span> <span class="kw">not</span> <span class="kw">in</span> dir(sth):
+            sth = self.<span class="skw">find</span>(sth)
+        <span class="kw">return</span> sth.getTarget()
+
+    @logging_wrapper
+    <span class="kw">def</span> get_point(self, image):
+        <span class="kw">try</span>:
+            target = self.get_target(image)
+        <span class="kw">except</span> ImageNotFound:
+            self._shake_screen()
+            target = self.get_target(image)
+        <span class="kw">return</span> Point(target.getX(), target.getY())
+
+    @logging_wrapper
+    <span class="kw">def</span> get_screen_center_point(self):
+        p1 = self.get_point(Images.NW_POINT)
+        p2 = self.get_point(Images.SE_POINT)
+        x = (p2.x - p1.x) / <span class="dig">2</span> + p1.x
+        y = (p2.y - p1.y) / <span class="dig">2</span> + p1.y
+        <span class="kw">return</span> Point(x, y)
+
+    @logging_wrapper
+    <span class="kw">def</span> get_distance(self, p1, p2):
+        a = p1.x - p2.x
+        b = p1.y - p2.y
+        <span class="kw">return</span> math.sqrt(float(a*a+b*b))
+
+    @logging_wrapper
+    <span class="kw">def</span> get_difference_between(self, p1, p2):
+        <span class="kw">return</span> Point(p2.x - p1.x, p2.y - p1.y)
+
+
+<span class="kw">class</span> FlashMovement(ApehaFlash):
+    @logging_wrapper
+    <span class="kw">def</span> is_another_group_around(self):
+        self.<span class="skw">click</span>(Images.MAIN_WINDOW)
+
+        <span class="kw">for</span> _ <span class="kw">in</span> range(<span class="dig">3</span>):
+            self.<span class="skw">type</span>(<span class="str">"i"</span>)
+            <span class="kw">if</span> <span class="kw">not</span> self.exists(Images.MY_GROUP):
+                <span class="kw">return</span> True
+            <span class="skw">sleep</span>(<span class="dig">0.3</span>)
+
+        self.<span class="skw">type</span>(<span class="str">"i"</span>)
+        <span class="kw">return</span> <span class="kw">not</span> self.exists(Images.MY_GROUP)
+
+    @logging_wrapper
+    <span class="kw">def</span> search_for_groups(self):
+        found = False
+        <span class="kw">while</span>(self.exists(Images.MAIN_WINDOW)):
+            <span class="skw">sleep</span>(<span class="dig">1.0</span>)
+            found = self.is_another_group_around()
+            <span class="kw">if</span> found:
+                <span class="kw">if</span> self.exists(Images.WALK):
+                    self.<span class="skw">click</span>(Images.WALK)
+                <span class="kw">break</span>
+
+        <span class="kw">if</span> found:
+            self.log(<span class="str">"Found another group"</span>)
+        <span class="kw">else</span>:
+            self.log(<span class="str">"Closed unexpectedly"</span>)
+
+    @logging_wrapper
+    <span class="kw">def</span> is_moving_after_func(self, func, *args):
+        tmp_image = self.capture_player()
+        func(*args)
+        <span class="kw">return</span> self.is_moving(tmp_image)
+
+    @logging_wrapper
+    <span class="kw">def</span> is_moving(self, tmp_image=None):
+        <span class="kw">if</span> <span class="kw">not</span> tmp_image:
+            tmp_image = self.capture_player()
+        <span class="kw">for</span> _ <span class="kw">in</span> range(<span class="dig">5</span>):
+            <span class="skw">sleep</span>(<span class="dig">0.01</span>)
+            <span class="kw">if</span> <span class="kw">not</span> self.exists(tmp_image):
+                <span class="kw">return</span> True
+        <span class="kw">return</span> False
+
+    @logging_wrapper
+    <span class="kw">def</span> get_direction_with_offset(self, direction):
+        is_nw = direction == Direction.NW
+        is_ne = direction == Direction.NE
+        is_sw = direction == Direction.SW
+        is_se = direction == Direction.SE
+        is_s = direction == Direction.S
+        is_n = direction == Direction.N
+        is_w = direction == Direction.W
+        is_e = direction == Direction.E
+
+        min_x = <span class="dig">30</span>
+        max_x = <span class="dig">120</span>
+        min_y = <span class="dig">20</span>
+        max_y = <span class="dig">90</span>
+
+        <span class="kw">if</span> is_n <span class="kw">or</span> is_s:
+            min_x = int(Constants.MAIN_WINDOW_WIDTH / <span class="dig">3</span>)
+            max_x = int(Constants.MAIN_WINDOW_WIDTH / <span class="dig">3</span> * <span class="dig">2</span>)
+            min_y = min_y / <span class="dig">2</span>
+            <span class="kw">if</span> is_n:
+                max_y = <span class="dig">90</span> / <span class="dig">2</span>
+            <span class="kw">else</span>:
+                max_y = <span class="dig">90</span> - min_y
+        <span class="kw">elif</span> is_e <span class="kw">or</span> is_w:
+            min_x = min_x / <span class="dig">2</span>
+            max_x = max_x / <span class="dig">3</span>
+            min_y = int(Constants.MAIN_WINDOW_HEIGHT / <span class="dig">3</span>)
+            max_y = int(Constants.MAIN_WINDOW_HEIGHT / <span class="dig">3</span> * <span class="dig">2</span>)
+
+        x = random.randint(min_x, max_x)
+        y = random.randint(min_y, max_y)
+        <span class="kw">if</span> is_n:
+            <span class="kw">return</span> Point(x, y)
+        <span class="kw">elif</span> is_s:
+            <span class="kw">return</span> Point(x, -y)
+        <span class="kw">elif</span> is_w:
+            <span class="kw">return</span> Point(x, y)
+        <span class="kw">elif</span> is_e:
+            <span class="kw">return</span> Point(-x, y)
+        <span class="kw">elif</span> is_nw:
+            <span class="kw">return</span> Point(x, y)
+        <span class="kw">elif</span> is_ne:
+            <span class="kw">return</span> Point(-x, y)
+        <span class="kw">elif</span> is_sw:
+            <span class="kw">return</span> Point(x, -y)
+        <span class="kw">elif</span> is_se:
+            <span class="kw">return</span> Point(-x, -y)
+
+    @logging_wrapper
+    <span class="kw">def</span> get_player_direction(self):
+        images_list = [Images.S, Images.SW, Images.NW,
+                       Images.NE, Images.SE, Images.N]
+
+        <span class="kw">for</span> image <span class="kw">in</span> images_list:
+            <span class="kw">if</span> self.exists(image):
+                <span class="kw">return</span> PLAYER_DIRECTIONS[image]
+
+        <span class="kw">raise</span> UnknownDirectionException(<span class="str">"Could determine player's direction"</span>)
+
+    @logging_wrapper
+    <span class="kw">def</span> move(self, directions=None):
+        self.click_ok()
+
+        <span class="kw">if</span> <span class="kw">not</span> directions:
+            dir1 = Direction.get_random_direction()
+            dir2 = Direction.get_random_direction(skip=[dir1])
+            dir3 = Direction.get_random_direction(skip=[dir1, dir2])
+            dir4 = Direction.get_random_direction(skip=[dir1, dir2, dir3])
+            directions = [dir1, dir2, dir3, dir4]
+
+        <span class="kw">def</span> double_click_offset(image, direction):
+            point = self.get_direction_with_offset(direction)
+            self._double_click_by_offset(image, point)
+
+        img_before_movement = self.capture_player()
+        <span class="kw">for</span> direction <span class="kw">in</span> directions:
+            image = self.get_pattern(DIRECTION_2_POINT[direction])
+            <span class="kw">print</span> image
+
+            tmp_image = self.capture_player()
+            <span class="kw">for</span> _ <span class="kw">in</span> range(<span class="dig">5</span>):
+                <span class="kw">print</span> image
+                double_click_offset(image, direction)
+                <span class="skw">sleep</span>(<span class="dig">0.1</span>)
+                <span class="kw">if</span> <span class="kw">not</span> self.exists(tmp_image):
+                    self.wait_for_stop()
+                    <span class="kw">break</span>
+
+        <span class="kw">return</span> <span class="kw">not</span> self.exists(img_before_movement)
+
+    @logging_wrapper
+    <span class="kw">def</span> wait_for_stop(self):
+        before = time()
+        after = time()
+
+        <span class="kw">while</span>(self.is_moving()):
+            <span class="kw">if</span> after - before &gt; <span class="dig">5</span> * <span class="dig">60</span>:
+                <span class="kw">break</span>
+            <span class="skw">sleep</span>(<span class="dig">0.5</span>)
+            after = time()
+
+    @logging_wrapper
+    <span class="kw">def</span> get_turning_direction(self, turn):
+        <span class="str">""" Returns Direction where turn to
+        Parameter 'turn' should be Constants.LEFT or Constants.RIGHT
+        """</span>
+        cur_direction = self.get_player_direction()
+        directions = Direction.get_all_players_directions()
+        index = directions.index(cur_direction)
+        offset = <span class="dig">1</span> <span class="kw">if</span> turn == Constants.RIGHT <span class="kw">else</span> -<span class="dig">1</span>
+        index += offset
+        <span class="kw">if</span> index &gt;= len(directions):
+            index = <span class="dig">0</span>
+        <span class="kw">elif</span> index &lt; <span class="dig">0</span>:
+            index = len(directions) - <span class="dig">1</span>
+
+        <span class="kw">return</span> directions[index]
+
+<span class="kw">class</span> CraftSearch(FlashMovement):
+    default_trees = Resources.OAKS
+<span class="cmt">#     default_trees = Resources.PINES
+</span>
+    @logging_wrapper
+    <span class="kw">def</span> _click_transparency_if_needed(self):
+        <span class="kw">if</span> <span class="kw">not</span> self.exists(Images.TRANSPARENCY_ON):
+            self._click(Images.TRANSPARENCY_OFF, Images.TRANSPARENCY_ON)
+
+    @logging_wrapper
+    <span class="kw">def</span> click_search(self):
+        self._click(Images.SEARCH, Images.SEARCH_TIMER)
+
+    @logging_wrapper
+    <span class="kw">def</span> found_nothing(self):
+        <span class="kw">return</span> self.exists(Images.NOTHING_WAS_FOUND)
+
+    @logging_wrapper
+    <span class="kw">def</span> is_ok_lightbox_visible(self):
+        <span class="kw">return</span> self.exists(Images.OK_LIGHTBOX_BORDER_H) <span class="kw">or</span> \
+               self.exists(Images.OK_LIGHTBOX_BORDER_W)
+
+    @logging_wrapper
+    <span class="kw">def</span> wait_for_ok(self):
+        <span class="kw">for</span> _ <span class="kw">in</span> range(<span class="dig">5</span>):
+            <span class="kw">try</span>:
+                self.log(<span class="str">"Waiting for ok"</span>)
+                self.<span class="skw">wait</span>(Images.OK, <span class="dig">35</span>)
+                <span class="kw">break</span>
+            <span class="kw">except</span> ImageNotFound, e:
+                self.log(e)
+                <span class="kw">if</span> self.is_ok_lightbox_visible():
+                    self.log(<span class="str">"Shaking"</span>)
+                    self._shake_screen()
+
+    @logging_wrapper
+    <span class="kw">def</span> click_ok(self):
+        exists = self.exists(Images.OK)
+        <span class="kw">while</span>(exists):
+            <span class="kw">try</span>:
+                <span class="kw">if</span> self.is_ok_lightbox_visible():
+                    self.log(<span class="str">"Clicking...OK"</span>)
+                    self.<span class="skw">click</span>(Images.OK)
+            <span class="kw">except</span> Exception, e:
+                self.log(<span class="str">"Exception"</span>, e)
+            <span class="kw">finally</span>:
+                <span class="skw">sleep</span>(<span class="dig">0.1</span>)
+                exists = self.exists(Images.OK)
+
+    @logging_wrapper
+    <span class="kw">def</span> get_found_status(self):
+        <span class="kw">if</span> self.exists(Images.PINE_IN_5_STEPS):
+            <span class="kw">return</span> SearchStatus.PINE_IN_5_STEPS
+        <span class="kw">elif</span> self.exists(Images.PINE_IN_FRONT):
+            <span class="kw">return</span> SearchStatus.PINE_IN_FRONT
+        <span class="kw">elif</span> self.exists(Images.PINE_ON_LEFT):
+            <span class="kw">return</span> SearchStatus.PINE_ON_THE_LEFT
+        <span class="kw">elif</span> self.exists(Images.PINE_ON_RIGHT):
+            <span class="kw">return</span> SearchStatus.PINE_ON_THE_RIGHT
+        <span class="kw">elif</span> self.exists(Images.OAK_IN_5_STEPS):
+            <span class="kw">return</span> SearchStatus.OAK_IN_5_STEPS
+        <span class="kw">elif</span> self.exists(Images.OAK_IN_FRONT):
+            <span class="kw">return</span> SearchStatus.OAK_IN_FRONT
+        <span class="kw">elif</span> self.exists(Images.OAK_ON_LEFT):
+            <span class="kw">return</span> SearchStatus.OAK_ON_THE_LEFT
+        <span class="kw">elif</span> self.exists(Images.OAK_ON_RIGHT):
+            <span class="kw">return</span> SearchStatus.OAK_ON_THE_RIGHT
+        <span class="kw">else</span>:
+            p = self.get_point(self.<span class="skw">find</span>(Images.NW_POINT))
+            f = self.<span class="skw">capture</span>(p.x, p.y, <span class="dig">480</span>, <span class="dig">310</span>)
+            self.log(<span class="str">"UNKOWN STATUS:"</span>, f)
+
+            <span class="kw">return</span> None
+
+    @logging_wrapper
+    <span class="kw">def</span> search_for_res(self, times=<span class="dig">1</span>):
+        <span class="kw">def</span> wait_for_search_btn_is_visible():
+            max_seconds = <span class="dig">60</span>
+            before = time()
+            after = time()
+
+            <span class="kw">while</span>(<span class="kw">not</span> self.exists(Images.SEARCH) <span class="kw">and</span> <span class="kw">not</span> self.exists(Images.OK)):
+                <span class="kw">if</span> after - before &gt; max_seconds:
+                    <span class="kw">raise</span> ImageNotFound
+                <span class="skw">sleep</span>(<span class="dig">1</span>)
+                after = time()
+
+        found_tree = False
+
+        status = None
+        self.log(<span class="str">"Searching"</span>)
+        i = <span class="dig">0</span>
+
+        self.click_ok()
+
+        <span class="kw">while</span>(<span class="kw">not</span> found_tree):
+            <span class="kw">try</span>:
+                <span class="kw">if</span> i &gt;= times:
+                    found_tree = True
+
+                self._click(Images.SEARCH, Images.SEARCH_TIMER)
+
+                wait_for_search_btn_is_visible()
+
+                <span class="kw">if</span> <span class="kw">not</span> self.exists(Images.OK) <span class="kw">and</span> self.is_ok_lightbox_visible():
+                    self._shake_screen()
+
+                found_tree = <span class="kw">not</span> self.found_nothing()
+
+                self.log(found_tree)
+                <span class="kw">if</span> found_tree:
+                    status = self.get_found_status()
+
+                self.click_ok()
+
+                i += <span class="dig">1</span>
+
+                <span class="kw">if</span> i &gt;= times:
+                    found_tree = True
+            <span class="kw">except</span> ImageNotFound:
+                <span class="skw">sleep</span>(<span class="dig">3</span>)
+<span class="cmt">#                 self.refresh()
+</span><span class="cmt">#                 sleep(15)
+</span><span class="cmt">#                 if self.exists(Images.AXE):
+</span><span class="cmt">#                     self.click(Images.AXE)
+</span>
+        self.log(<span class="str">"DONE: searching"</span>)
+        <span class="kw">return</span> status
+
+    @logging_wrapper
+    <span class="kw">def</span> find_tree_by_point(self, point, trees_images=None):
+        trees = self.find_trees(trees_images=trees_images)
+        closest_tree = None
+        closest_dist = None
+
+        <span class="kw">for</span> tree <span class="kw">in</span> trees:
+<span class="cmt">#             self.log("hover", tree)
+</span><span class="cmt">#             self.hover(tree)
+</span>            tree_point = self.get_point(tree)
+<span class="cmt">#             self.log(11)
+</span>            cur_dist = self.get_distance(tree_point, point)
+<span class="cmt">#             self.log(22)
+</span><span class="cmt">#             closest_dist = self.get_distance(self.get_point(trees[0]), point)
+</span><span class="cmt">#             self.log(33)
+</span><span class="cmt">#             self.log("find_tree_by_point", cur_dist, closest_dist)
+</span>            <span class="kw">if</span> <span class="kw">not</span> closest_dist:
+                closest_dist = cur_dist
+
+            <span class="kw">if</span> cur_dist &lt;= closest_dist <span class="kw">and</span> cur_dist &lt; <span class="dig">100</span>:
+                closest_tree = tree
+                closest_dist = cur_dist
+
+        <span class="kw">return</span> closest_tree
+
+    @logging_wrapper
+    <span class="kw">def</span> is_point_inside_5_step_area(self, point):
+        <span class="cmt">#SE quadrant of hexogen
+</span>        point_center = Point(<span class="dig">0</span>, <span class="dig">0</span>)
+        point_south = Point(<span class="dig">0</span>, <span class="dig">145</span>)
+        point_east = Point(<span class="dig">200</span>, <span class="dig">0</span>)
+        point_south_east = Point(<span class="dig">207</span>, <span class="dig">73</span>)
+
+        cp = self.get_screen_center_point()
+        p = self.get_difference_between(cp, point)
+        x, y = abs(p.x), abs(p.y)
+
+        <span class="cmt"># 2 triangles inside quadrant, looping over them
+</span>        <span class="kw">for</span> p1, p2, p3 <span class="kw">in</span> [(point_center, point_south_east, point_south),
+                           (point_center, point_south_east, point_east)]:
+            x1, y1 = p1.x, p1.y
+            x2, y2 = p2.x, p2.y
+            x3, y3 = p3.x, p3.y
+<span class="cmt">#             self.log("x1=%d, y1=%d" % (x1,y1))
+</span><span class="cmt">#             self.log("x2=%d, y2=%d" % (x2,y2))
+</span><span class="cmt">#             self.log("x3=%d, y3=%d" % (x3,y3))
+</span>            det = (y2 - y3)*(x1 - x3) + (x3 - x2)*(y1 - y3)
+
+            alpha = float((y2 - y3)*(x - x3) + (x3 - x2)*(y - y3)) / det
+            beta = float((y3 - y1)*(x - x3) + (x1 - x3)*(y - y3)) / det
+            gamma = <span class="dig">1.0</span> - alpha - beta
+
+            self.log(<span class="str">"is_point_inside"</span>, p, alpha, beta, gamma)
+            <span class="kw">if</span> <span class="dig">0.0</span> &lt;= alpha &lt;= <span class="dig">1.0</span> <span class="kw">and</span> \
+               <span class="dig">0.0</span> &lt;= beta &lt;= <span class="dig">1.0</span> <span class="kw">and</span> \
+               <span class="dig">0.0</span> &lt;= gamma &lt;= <span class="dig">1.0</span>:
+                <span class="kw">return</span> True
+
+        <span class="kw">return</span> False
+
+    @logging_wrapper
+    <span class="kw">def</span> find_trees(self, trees_images=None, only_trees_in_5_steps=True):
+        <span class="kw">if</span> <span class="kw">not</span> trees_images:
+            trees_images = self.default_trees
+
+        self._click_transparency_if_needed()
+        trees = []
+        <span class="kw">for</span> tree <span class="kw">in</span> trees_images:
+            <span class="kw">try</span>:
+                found_trees = self.find_all(tree)
+                <span class="kw">if</span> only_trees_in_5_steps:
+                    found_trees = [t <span class="kw">for</span> t <span class="kw">in</span> found_trees \
+                                   <span class="kw">if</span> self.is_point_inside_5_step_area(
+                                           self.get_point(t)
+                                      )
+                                   ]
+                <span class="kw">if</span> len(found_trees) &gt; <span class="dig">0</span>:
+                    trees += found_trees
+            <span class="kw">except</span> ImageNotFound:
+                <span class="kw">pass</span>
+        <span class="kw">return</span> trees
+
+    @logging_wrapper
+    <span class="kw">def</span> get_sorted_trees(self, trees):
+        cp = self.get_screen_center_point()
+        <span class="kw">def</span> get_distance(t):
+            tp = self.get_point(t)
+            <span class="kw">return</span> self.get_distance(cp, tp)
+        trees = sorted(trees, key=get_distance)
+        <span class="kw">return</span> trees
+
+    @logging_wrapper
+    <span class="kw">def</span> get_closest_tree(self, trees_images=None):
+        <span class="kw">if</span> <span class="kw">not</span> trees_images:
+            trees_images = Resources.ALL_TREES
+        trees = self.find_trees(trees_images=trees_images)
+        trees = self.get_sorted_trees(trees)
+        <span class="kw">return</span> trees[<span class="dig">0</span>] <span class="kw">if</span> len(trees) &gt; <span class="dig">0</span> <span class="kw">else</span> None
+
+    @logging_wrapper
+    <span class="kw">def</span> _pivot_to(self, direction):
+        dirs = Direction.get_all_players_directions()
+        cur_dir = self.get_player_direction()
+
+        <span class="kw">while</span>(cur_dir != direction):
+            cdi = dirs.index(cur_dir)
+            tdi = dirs.index(direction)
+            times = tdi - cdi
+            self.log(<span class="str">"Times to pivot:"</span>, times)
+            <span class="kw">if</span> times != <span class="dig">0</span>:
+                self.<span class="skw">click</span>(Images.MAIN_WINDOW)
+                key = self.KEY_RIGHT <span class="kw">if</span> times &gt; <span class="dig">0</span> <span class="kw">else</span> self.KEY_LEFT
+                self.<span class="skw">type</span>(key*abs(times))
+                <span class="skw">sleep</span>(<span class="dig">0.2</span>)
+
+            cur_dir = self.get_player_direction()
+
+    @logging_wrapper
+    <span class="kw">def</span> go_to_tree_upfront(self, tree, diff_point=None):
+        directions = []
+        self.log(<span class="str">"go_to_tree_upfront"</span>, diff_point)
+        <span class="kw">if</span> diff_point <span class="kw">and</span> diff_point.x &lt; <span class="dig">0</span>:
+            directions = [Direction.N, Direction.NW, Direction.SW]
+        <span class="kw">elif</span> diff_point <span class="kw">and</span> diff_point.x &gt; <span class="dig">0</span>:
+            directions = [Direction.N, Direction.NE, Direction.SE]
+        <span class="kw">else</span>:
+            directions = [Direction.N, Direction.NE, Direction.SE, Direction.SW, Direction.NW]
+
+        <span class="kw">for</span> direction <span class="kw">in</span> directions:
+            self.log(<span class="str">"go_to_tree_upfront"</span>, direction)
+            tmp_img = self.capture_player()
+            is_moving = self.is_moving_after_func(self.double_click_near_tree,
+                                                  tree,
+                                                  direction)
+            <span class="kw">if</span> is_moving:
+                self.wait_for_stop()
+
+            <span class="kw">if</span> <span class="kw">not</span> self.exists(tmp_img) <span class="kw">and</span> self.is_near():
+                <span class="kw">try</span>:
+                    self.get_player_direction()
+                    <span class="kw">return</span> True
+                <span class="kw">except</span> UnknownDirectionException:
+                    <span class="kw">pass</span>
+
+            <span class="kw">if</span> is_moving:
+                tree = self.get_closest_tree()
+
+        <span class="kw">return</span> False
+
+    @logging_wrapper
+    <span class="kw">def</span> is_near(self, tree=None):
+        minimal_distance = <span class="dig">60</span>
+
+        <span class="kw">if</span> <span class="kw">not</span> tree:
+            tree = self.get_closest_tree()
+
+        tp = self.get_point(tree)
+        cp = self.get_screen_center_point()
+
+        distance = self.get_distance(cp, tp)
+        <span class="kw">return</span> distance &lt; minimal_distance
+
+    @logging_wrapper
+    <span class="kw">def</span> _get_direction_to_pivot(self):
+        tree = self.get_closest_tree()
+        self.hover(tree)
+        <span class="kw">assert</span> self.is_near(tree)
+        tp = self.get_point(tree) <span class="cmt"># center point of tree</span>
+        cp = self.get_screen_center_point()
+        tp.y = tp.y + <span class="dig">13</span> <span class="cmt"># fixing y, point root of tree</span>
+        tx, ty = tp.x, tp.y
+        cx, cy = cp.x, cp.y
+        dx = tx - cx
+        dy = ty - cy
+
+        self.log(cp, tp)
+        self.log(dx, dy)
+        <span class="kw">if</span> abs(dx) &lt;= Constants.PLAYER_TRUE_WIDTH / <span class="dig">2</span>:
+            <span class="kw">if</span> dy &gt; <span class="dig">0</span>:
+                degrees = <span class="dig">90</span>
+            <span class="kw">else</span>:
+                degrees = <span class="dig">180</span>
+        <span class="kw">else</span>:
+            degrees = abs(math.degrees(math.atan(float(dy)/dx)))
+            <span class="kw">if</span> tx &gt; cx <span class="kw">and</span> ty &gt; cy:
+                degrees += <span class="dig">90</span>
+            <span class="kw">elif</span> tx &gt; cx <span class="kw">and</span> ty &lt; cy:
+                degrees += <span class="dig">180</span>
+            <span class="kw">elif</span> tx &lt; cx <span class="kw">and</span> ty &lt; cy:
+                degrees = <span class="dig">270</span> + <span class="dig">90</span> - degrees
+
+        self.log(<span class="str">"Degrees"</span>, degrees)
+
+        <span class="kw">if</span> <span class="dig">0</span> &lt; degrees &lt; <span class="dig">90</span>:
+            <span class="kw">return</span> Direction.SW
+        <span class="kw">elif</span> <span class="dig">90</span> &lt; degrees &lt; <span class="dig">180</span>:
+            <span class="kw">return</span> Direction.SE
+        <span class="kw">elif</span> <span class="dig">180</span> &lt; degrees &lt; <span class="dig">270</span>:
+            <span class="kw">return</span> Direction.NE
+        <span class="kw">elif</span> <span class="dig">270</span> &lt; degrees &lt; <span class="dig">360</span>:
+            <span class="kw">return</span> Direction.NW
+        <span class="kw">elif</span> degrees == <span class="dig">90</span>:
+            <span class="kw">return</span> Direction.S
+        <span class="kw">else</span>:
+            <span class="kw">return</span> Direction.N
+
+    @logging_wrapper
+    <span class="kw">def</span> __get_tree_offset_point_by(self, direction):
+        x = <span class="dig">38</span>
+        pn = Point(x, <span class="dig">4</span>) <span class="cmt"># point in I and II quadrant(north)</span>
+        ps = Point(x, <span class="dig">24</span>) <span class="cmt"># point in III and IV quadrant(south)</span>
+        point = None
+        <span class="kw">if</span> direction == Direction.NE:
+            point = Point(pn.x, -pn.y)
+        <span class="kw">elif</span> direction == Direction.SE:
+            point = Point(ps.x, ps.y)
+        <span class="kw">elif</span> direction == Direction.SW:
+            point = Point(-ps.x, ps.y)
+        <span class="kw">elif</span> direction == Direction.NW:
+            point = Point(-pn.x, -pn.y)
+        <span class="kw">elif</span> direction == Direction.N:
+            point = Point(<span class="dig">0</span>, -<span class="dig">30</span>)
+        <span class="kw">elif</span> direction == Direction.S:
+            point = Point(<span class="dig">0</span>, <span class="dig">30</span>)
+        <span class="kw">else</span>:
+            msg = <span class="str">"Action for chosen direction{%s} is not supported"</span> % direction
+            <span class="kw">raise</span> NotImplementedError(msg)
+        <span class="kw">return</span> point
+
+    @logging_wrapper
+    <span class="kw">def</span> double_click_near_tree(self, tree, direction):
+        point = self.__get_tree_offset_point_by(direction)
+        self._double_click_by_offset(tree, point)
+
+    @logging_wrapper
+    <span class="kw">def</span> click_near_tree(self, tree, direction):
+        point = self.__get_tree_offset_point_by(direction)
+        self._click_by_offset(tree, point)
+
+    @logging_wrapper
+    <span class="kw">def</span> come_to_tree(self, tree=None):
+        <span class="kw">if</span> <span class="kw">not</span> tree:
+            tree = self.get_closest_tree()
+
+
+<span class="kw">class</span> CraftMine(CraftSearch):
+    TIME_TO_MINE = <span class="dig">5.2</span> * <span class="dig">60</span>
+
+    @logging_wrapper
+    <span class="kw">def</span> put_tool_if_necessary(self):
+        has_tool = self.exists(Images.AXE)
+        <span class="kw">if</span> has_tool:
+            <span class="kw">return</span>
+        <span class="kw">else</span>:
+            <span class="kw">while</span>(<span class="kw">not</span> has_tool):
+                new_window = False
+                <span class="kw">try</span>:
+                    self._click(Images.BACKPACK, Images.BP_TOOLS)
+                    new_window = True
+                    has_tool = self.exists(Images.AXE)
+                    <span class="kw">if</span> <span class="kw">not</span> has_tool:
+                        self.<span class="skw">wait</span>(Images.BP_TOOLS, <span class="dig">20</span>)
+                        self.<span class="skw">click</span>(Images.BP_TOOLS)
+                        self.<span class="skw">wait</span>(Images.BP_PUT, <span class="dig">20</span>)
+                        self._mouse_wheel_down(Images.BP_PUT, <span class="dig">50</span>)
+                        <span class="kw">for</span> _ <span class="kw">in</span> range(<span class="dig">10</span>):
+                            <span class="skw">sleep</span>(<span class="dig">1</span>)
+                            puts = self.find_all(Images.BP_PUT)
+                            puts = sorted(puts, key=<span class="kw">lambda</span> x: self.get_point(x).y)
+                            <span class="kw">if</span> len(puts) &gt; <span class="dig">0</span>:
+                                self.<span class="skw">click</span>(puts[-<span class="dig">1</span>])
+                                <span class="kw">break</span>
+                <span class="kw">except</span>:
+                    <span class="kw">pass</span>
+                <span class="kw">finally</span>:
+                    <span class="kw">if</span> new_window:
+                        <span class="skw">type</span>(<span class="str">"w"</span>, self.KEY_CTRL)
+                        self.<span class="skw">wait</span>(Images.MAIN_WINDOW, <span class="dig">20</span>)
+                    has_tool = self.exists(Images.AXE)
+
+    @logging_wrapper
+    <span class="kw">def</span> craft(self):
+        <span class="kw">def</span> wait_for_craft_btn_is_visible():
+            max_seconds = <span class="dig">60</span> * <span class="dig">10</span>
+            before = time()
+            after = time()
+            <span class="kw">while</span>(<span class="kw">not</span> self.exists(Images.CRAFT) <span class="kw">or</span> self.exists(Images.CRAFT_TIMER)):
+                self.log(<span class="str">"Waiting for Craft is ended"</span>)
+                <span class="skw">sleep</span>(<span class="dig">1</span>)
+                after = time()
+                <span class="kw">if</span> after - before &gt; max_seconds:
+                    <span class="kw">raise</span> ImageNotFound
+
+        tree_is_standing = True
+
+        self.log(<span class="str">"Crafting"</span>)
+        self.click_ok()
+
+        <span class="kw">while</span>(tree_is_standing):
+            <span class="kw">try</span>:
+                was_clicked = self._click(Images.CRAFT, Images.CRAFT_TIMER)
+
+                <span class="kw">if</span> self.exists(Images.NEED_AN_AXE):
+                    self.click_ok()
+                    self.put_tool_if_necessary()
+                    was_clicked = self._click(Images.CRAFT, Images.CRAFT_TIMER)
+
+                self.log(<span class="str">"Clicked"</span>, was_clicked)
+                self.log(tree_is_standing)
+
+                <span class="kw">if</span> was_clicked:
+                    wait_for_craft_btn_is_visible()
+                    self.log(tree_is_standing)
+
+                    <span class="kw">if</span> self.exists(Images.CRAFT):
+                        <span class="kw">if</span> <span class="kw">not</span> self.exists(Images.OK) <span class="kw">and</span> \
+                           self.is_ok_lightbox_visible():
+                            self._shake_screen()
+                        self.click_ok()
+
+                <span class="kw">else</span>:
+                    tree_is_standing = False
+            <span class="kw">except</span> ImageNotFound:
+                <span class="skw">sleep</span>(<span class="dig">3</span>)
+<span class="cmt">#                 self.refresh()
+</span><span class="cmt">#                 sleep(15)
+</span><span class="cmt">#                 if self.exists(Images.AXE):
+</span><span class="cmt">#                     self.click(Images.AXE)
+</span>
+        self.log(<span class="str">"DONE: crafting"</span>)
+
+
+<span class="kw">class</span> Movement(object):
+    <span class="kw">def</span> next_direction(self):
+        <span class="kw">raise</span> NotImplementedError
+
+
+<span class="kw">class</span> LinearMovement(object):
+    <span class="kw">def</span> __init__(self):
+        self.index = <span class="dig">0</span>
+        self.times_per_direction = <span class="dig">20</span>
+
+        <span class="cmt"># map: Polesje
+</span>        self.directions = [
+                           [Direction.NW],
+                           [Direction.SW],
+                           [Direction.SE],
+                           [Direction.NE]
+                           ]
+        <span class="cmt"># backwards
+</span><span class="cmt">#        self.directions = [
+</span><span class="cmt">#                            [Direction.SE], 
+</span><span class="cmt">#                            [Direction.SW], 
+</span><span class="cmt">#                            [Direction.NW], 
+</span><span class="cmt">#                            [Direction.NE],
+</span><span class="cmt">#                           ]
+</span>
+        <span class="cmt"># temnqe 4ashjobq
+</span><span class="cmt">#         self.directions = [
+</span><span class="cmt">#                            [Direction.SE, Direction.SE, Direction.E], 
+</span><span class="cmt">#                            [Direction.S, Direction.SW], 
+</span><span class="cmt">#                            [Direction.NW, Direction.NW, Direction.NW], 
+</span><span class="cmt">#                            [Direction.NE]
+</span><span class="cmt">#                           ]
+</span>
+        <span class="cmt"># zigzag
+</span><span class="cmt">#        self.directions = [
+</span><span class="cmt">#                           [Direction.NW], 
+</span><span class="cmt">#                           [Direction.SW], 
+</span><span class="cmt">#                           [Direction.N], 
+</span><span class="cmt">#                           [Direction.SE],
+</span><span class="cmt">#                           [Direction.NE],
+</span><span class="cmt">#                           [Direction.S],
+</span><span class="cmt">#                           ]
+</span>        <span class="cmt"># Direction: narrow romb
+</span><span class="cmt">#         self.directions = [
+</span><span class="cmt">#                            [Direction.N, Direction.NW],
+</span><span class="cmt">#                            [Direction.S, Direction.SW],
+</span><span class="cmt">#                            [Direction.S, Direction.SE],
+</span><span class="cmt">#                            [Direction.N, Direction.NE]
+</span><span class="cmt">#                            ]
+</span>
+<span class="cmt">#         self.directions = [
+</span><span class="cmt">#                            [Direction.NE, Direction.N],
+</span><span class="cmt">#                            ]
+</span>
+    <span class="kw">def</span> next_direction(self):
+        dir_count = len(self.directions)
+
+        <span class="kw">if</span> self.index &gt;= self.times_per_direction * dir_count:
+            self.index = <span class="dig">0</span>
+
+        direction = None
+        directions = None
+        <span class="kw">for</span> i <span class="kw">in</span> range(dir_count):
+            <span class="kw">if</span> i * self.times_per_direction &lt;= self.index <span class="kw">and</span> \
+               self.index &lt; (i + <span class="dig">1</span>) * self.times_per_direction:
+                directions = self.directions[i]
+                <span class="kw">break</span>
+
+        <span class="kw">if</span> <span class="kw">not</span> directions:
+            directions = self.directions[<span class="dig">0</span>]
+
+        inner_dir_count = len(directions)
+        <span class="kw">if</span> inner_dir_count == <span class="dig">1</span>:
+            direction = directions[<span class="dig">0</span>]
+        <span class="kw">else</span>:
+            direction = directions[self.index % inner_dir_count]
+
+        self.index += <span class="dig">1</span>
+
+        <span class="kw">return</span> direction
+
+
+<span class="kw">class</span> RandomMovement(object):
+    <span class="kw">def</span> next_direction(self):
+        <span class="kw">return</span> Direction.get_random_direction()
+
+
+<span class="kw">class</span> CraftMain(CraftMine, FlashMovement):
+    TIMES = <span class="dig">10</span>
+    AREA_MOVEMENT = <span class="dig">1</span>
+    MOVEMENT = LinearMovement()
+
+    @logging_wrapper
+    <span class="kw">def</span> go_to_place_in_forest(self, directions):
+        self.move(directions)
+        self.wait_for_stop()
+
+    @logging_wrapper
+    <span class="kw">def</span> find_tree_and_craft_in_5_steps(self, trees_images=None):
+        count = len(self.find_trees(trees_images=trees_images))
+        self.log(count)
+        <span class="kw">for</span> i <span class="kw">in</span> range(<span class="dig">1</span>, count):
+            trees = self.get_sorted_trees(self.find_trees(trees_images=trees_images))
+            <span class="kw">if</span> i &gt;= len(trees):
+                <span class="kw">return</span> False
+            tree = trees[i]
+
+            point_tree = self.get_point(tree)
+            point_closest_tree = self.get_point(trees[<span class="dig">0</span>])
+            diftree = self.get_difference_between(point_tree,
+                                                  point_closest_tree)
+            status = self.go_to_tree_and_search(tree, trees_images)
+            <span class="kw">if</span> status:
+                self.click_ok()
+                <span class="kw">if</span> status <span class="kw">in</span> [SearchStatus.PINE_IN_FRONT,
+                              SearchStatus.OAK_IN_FRONT]:
+                    self.craft()
+                    <span class="kw">return</span> True
+                <span class="kw">elif</span> status <span class="kw">in</span> [SearchStatus.PINE_ON_THE_LEFT,
+                                SearchStatus.OAK_ON_THE_LEFT]:
+                    direction = self.get_turning_direction(Constants.LEFT)
+                    self._pivot_to(direction)
+                    self.craft()
+                    <span class="kw">return</span> True
+                <span class="kw">elif</span> status <span class="kw">in</span> [SearchStatus.PINE_ON_THE_RIGHT,
+                                SearchStatus.OAK_ON_THE_RIGHT]:
+                    direction = self.get_turning_direction(Constants.RIGHT)
+                    self._pivot_to(direction)
+                    self.craft()
+                    <span class="kw">return</span> True
+            <span class="kw">else</span>:
+                self.click_ok()
+            self.log(<span class="str">"="</span>*<span class="dig">50</span>)
+            new_closest = self.get_point(self.get_closest_tree(trees_images))
+            self.log(<span class="dig">1</span>)
+            diff_point = Point(
+                new_closest.x + diftree.x,
+                new_closest.y + diftree.y)
+            prev_tree = self.find_tree_by_point(diff_point, trees_images)
+
+            self.log(<span class="str">"Prev tree:"</span>, prev_tree)
+            self.go_to_tree_upfront(prev_tree)
+            self.log(<span class="str">"="</span>*<span class="dig">50</span>, <span class="str">"END"</span>)
+
+        <span class="kw">return</span> False
+
+    @logging_wrapper
+    <span class="kw">def</span> go_to_tree_and_search(self, tree=None, trees_images=None):
+        <span class="kw">if</span> <span class="kw">not</span> tree:
+            tree = self.get_closest_tree(trees_images)
+        <span class="kw">if</span> self.go_to_tree_upfront(tree):
+            direction = self._get_direction_to_pivot()
+            self._pivot_to(direction)
+            <span class="kw">return</span> self.search_for_res(self.TIMES)
+        <span class="kw">else</span>:
+            <span class="kw">return</span> None
+
+    @logging_wrapper
+    <span class="kw">def</span> search_in_current_area(self):
+        self.click_ok()
+        status = self.go_to_tree_and_search()
+
+        <span class="kw">if</span> status <span class="kw">and</span> DEBUG:
+            p = self.get_point(self.<span class="skw">find</span>(Images.NW_POINT))
+            f = self.<span class="skw">capture</span>(p.x, p.y, <span class="dig">480</span>, <span class="dig">310</span>)
+            self.log(<span class="str">"SCREEN:"</span>, f)
+
+        <span class="kw">if</span> status:
+            self.log(status)
+            self.click_ok()
+
+        <span class="kw">if</span> status <span class="kw">in</span> [SearchStatus.PINE_IN_FRONT,
+                      SearchStatus.OAK_IN_FRONT]:
+            self.craft()
+            <span class="kw">return</span> True
+        <span class="kw">elif</span> status <span class="kw">in</span> (SearchStatus.PINE_ON_THE_LEFT,
+                        SearchStatus.OAK_ON_THE_LEFT):
+            direction = self.get_turning_direction(Constants.LEFT)
+            self._pivot_to(direction)
+            self.craft()
+            <span class="kw">return</span> True
+        <span class="kw">elif</span> status <span class="kw">in</span> (SearchStatus.PINE_ON_THE_RIGHT,
+                        SearchStatus.OAK_ON_THE_RIGHT):
+            direction = self.get_turning_direction(Constants.RIGHT)
+            self._pivot_to(direction)
+            self.craft()
+            <span class="kw">return</span> True
+        <span class="kw">elif</span> status == SearchStatus.PINE_IN_5_STEPS:
+            <span class="kw">return</span> self.find_tree_and_craft_in_5_steps(Resources.PINES)
+        <span class="kw">else</span>:
+            <span class="kw">return</span> False
+
+    @logging_wrapper
+    <span class="kw">def</span> move_to_other_location(self, is_good_direction=True):
+        back_times = <span class="dig">10</span>
+        times_per_dir = <span class="dig">0</span>
+        moved = False
+
+        prev_directions = []
+        <span class="kw">while</span>(<span class="kw">not</span> moved):
+            direction = self.MOVEMENT.next_direction()
+
+            <span class="kw">if</span> is_good_direction:
+                <span class="kw">if</span> times_per_dir &lt;= self.AREA_MOVEMENT:
+                    directions = [direction] * self.AREA_MOVEMENT
+                <span class="kw">else</span>:
+                    directions = [Direction.get_random_direction(
+                                     skip=prev_directions)] * times_per_dir
+            <span class="kw">else</span>:
+                directions = [Direction.get_opposite_direction(direction)]
+
+            moved = self.move(directions)
+
+            <span class="kw">if</span> moved <span class="kw">and</span> <span class="kw">not</span> is_good_direction:
+                <span class="kw">for</span> _ <span class="kw">in</span> range(<span class="dig">1</span>, back_times):
+                    <span class="kw">if</span> <span class="kw">not</span> self.move(directions):
+                        <span class="kw">break</span>
+
+            prev_directions += directions
+            times_per_dir += <span class="dig">1</span>
+            self.log(<span class="str">"move_to_other_location TIMES"</span>, times_per_dir)
+
+        self.wait_for_stop()
+
+    @logging_wrapper
+    <span class="kw">def</span> try_to_craft(self):
+        <span class="kw">while</span>(True):
+            <span class="kw">try</span>:
+                val = self.search_in_current_area()
+                <span class="kw">if</span> val:
+                    self.search_in_current_area()
+            <span class="kw">except</span> Exception, e:
+                self.log(e)
+                traceback.print_exc()
+            <span class="kw">finally</span>:
+                <span class="kw">try</span>:
+                    self.move_to_other_location()
+                    <span class="kw">while</span>(True):
+                        trees = len(self.find_trees())
+
+                        good_number_of_trees = <span class="dig">8</span>
+                        is_good_area = trees &gt; <span class="dig">2</span> <span class="kw">and</span> \
+                            trees &lt;= good_number_of_trees
+<span class="cmt">#                             and \
+</span><span class="cmt">#                             not self.exists(Images.ROAD_PAVEMENT)
+</span>                        is_good_direction = trees &lt; good_number_of_trees * <span class="dig">2</span>
+
+                        self.log(<span class="str">"is_good_area"</span>, is_good_area)
+                        self.log(<span class="str">"is_good_direction"</span>, is_good_direction)
+                        <span class="kw">if</span> is_good_area:
+                            <span class="kw">break</span>
+                        <span class="kw">else</span>:
+                            self.move_to_other_location(is_good_direction)
+                <span class="kw">except</span> Exception, e:
+                    self.log(e)
+                    traceback.print_exc()
+                    <span class="skw">sleep</span>(<span class="dig">3</span>)
+
+
+<span class="kw">if</span> __name__ == <span class="str">"__main__"</span>:
+    <span class="cmt"># Main crafting logic
+</span>    main = CraftMain()
+    <span class="cmt"># main.login()
+</span>    <span class="cmt"># main.check_my_set()
+</span>    <span class="cmt"># main.leave_city()
+</span>    dirs = [Direction.SW, Direction.NW]*<span class="dig">500</span>
+    dirs = [Direction.NW]*<span class="dig">200</span>
+    dirs = [Direction.NW]*<span class="dig">100</span>
+    dirs = [Direction.NW]*<span class="dig">100</span>
+    dirs = [Direction.NE]*<span class="dig">50</span>
+    <span class="cmt">#back to city
+</span>    dirs = [Direction.W]*<span class="dig">100</span> + [Direction.NW]*<span class="dig">150</span>
+    <span class="cmt">#dirs = [Direction.NE]*20 + [Direction.SE]*200
+</span>    dirs = [Direction.NE,]
+
+<span class="cmt">#     main._click_and_not_visible(Pattern("1401007414273.png").similar(0.87))
+</span><span class="cmt">#     main._click_and_not_visible(Pattern("1401007572182.png").similar(0.87))
+</span><span class="cmt">#     main._click_and_not_visible(Pattern("1401007851994.png").similar(0.87))
+</span><span class="cmt">#     main._click_and_not_visible(Pattern("1401008117882.png").similar(0.88))
+</span>
+    <span class="cmt">#print dirs
+</span>    <span class="cmt"># main.go_to_place_in_forest(dirs)
+</span>    <span class="cmt">#main.MOVEMENT.times_per_direction = 2
+</span><span class="cmt">#     main.move_to_other_location()
+</span>    <span class="cmt">#main.move(dirs[:1])
+</span>    <span class="cmt">#main.try_to_craft()
+</span>    <span class="cmt">#main.click_ok()
+</span>    <span class="cmt">#main.craft()
+</span>    <span class="cmt">#print main.get_closest_tree()
+</span>    <span class="cmt"># print [main.get_distance(main.get_screen_center_point(), main.get_point(t)) for t in main.get_sorted_trees(main.find_trees())]
+</span>    <span class="cmt"># for t in main.get_sorted_trees(main.find_trees()):
+</span>    <span class="cmt">#     main.hover(t)
+</span>    <span class="cmt"># print len(main.find_trees())
+</span>    <span class="cmt"># main.move([Direction.N]*3)
+</span>    main.search_for_res(<span class="dig">5</span>)
+    <span class="cmt"># main.craft()
+</span>    <span class="cmt"># main.go_to_tree_and_search()
+</span>    <span class="cmt"># tree = main.get_closest_tree()
+</span>    <span class="cmt"># direction = main.go_to_tree_upfront(tree)
+</span>    <span class="cmt">#direction = main._get_direction_to_pivot()
+</span>    <span class="cmt"># main.get_player_direction()
+</span>    <span class="cmt">#main._pivot_to(direction)
+</span><span class="cmt">#     main.find_tree_and_craft_in_5_steps()
+</span>    <span class="cmt"># main.search_in_current_area()
+</span>    <span class="cmt">#main.hover(main.get_closest_tree())
+</span>    <span class="cmt"># main.get_distance(main.get_point(main.get_closest_tree()), main.get_screen_center_point())
+</span>    <span class="cmt">#main.move([Direction.NW]*20)# to random direction
+</span>
+    <span class="cmt">#search_for_res(10)
+</span>    <span class="cmt">#_craft()
+</span>    <span class="cmt">#search_for_groups()
+</span>
+    <span class="cmt">#direction = random.choice([Direction.NW,Direction.EW,Direction.NE,Direction.SE])
+</span>    <span class="cmt">#for _ in range(30):
+</span>    <span class="cmt">#    move(Direction.NW)
+</span>    <span class="cmt">#move(Direction.SE)
+</span>    <span class="cmt">#self.log(hover(__get_closest_tree())
+</span>    <span class="cmt">#get_to_tree_upfront()
+</span>    <span class="cmt">#[hover(tree) for tree in find_trees()]
+</span>    <span class="cmt">#search_for_tree()
+</span>    <span class="cmt">#__get_closest_tree()
+</span>    <span class="cmt">#__get_center_point()
+</span>    <span class="cmt">#get_to_tree_upfront()
+</span>    <span class="cmt">#print exists()
+</span>    <span class="cmt">#kraft()
+</span>
+    <span class="cmt"># direction =  _get_direction_to_pivot()
+</span>    <span class="cmt"># print direction
+</span>    <span class="cmt"># __pivot_to(direction)
+</span>
+    <span class="cmt"># TEST: find tree closest to coordinates
+</span>    <span class="cmt"># click_search = CraftSearch()
+</span>    <span class="cmt"># center = click_search.get_screen_center_point()
+</span>    <span class="cmt"># ftree = click_search.find_tree_by_point(center)
+</span>    <span class="cmt"># click_search.hover(ftree)
+</span>    <span class="cmt"># # print "1:", ftree
+</span>    <span class="cmt"># # print "2:", click_search.get_closest_tree()
+</span>    <span class="cmt"># assert str(ftree) == str(click_search.get_closest_tree())
+</span>    <span class="cmt"># END
+</span>
+    <span class="cmt"># TEST: go to tree and click_search
+</span>    <span class="cmt"># main = CraftMain()
+</span>    <span class="cmt"># tree = main.get_closest_tree()
+</span>    <span class="cmt"># if main.go_to_tree_upfront(tree): 
+</span>    <span class="cmt">#     direction = main._get_direction_to_pivot()
+</span>    <span class="cmt">#     main._pivot_to(direction)
+</span>    <span class="cmt"># else:
+</span>    <span class="cmt">#     assert False
+</span>    <span class="cmt"># END
+</span>
+    <span class="cmt"># TEST: find center 10 times
+</span>    <span class="str">'''
+    for i in range(100):
+        print i
+        print main.get_screen_center_point()
+    '''</span>
+    <span class="cmt"># END
+</span>
+    <span class="cmt"># TEST: get direction to pivot
+</span><span class="cmt">#     print main._get_direction_to_pivot()
+</span>    <span class="cmt"># END
+</span>
+    <span class="cmt"># TEST: basic images are visible
+</span>    <span class="str">'''
+    for i in [Images.NW_POINT, Images.NE_POINT, Images.SW_POINT, Images.SE_POINT, 
+              Images.SEARCH, Images.MAIN_WINDOW, Images.CRAFT, Images.MY_GROUP,
+              Images.ARROW, Images.AXE, Images.BACKPACK, Images.TRANSPARENCY_ON]:
+        print i
+        hover(i)
+        assert exists(i)
+    '''</span>
+    <span class="cmt"># END
+</span>
+    <span class="cmt"># TEST: hover trees and get trees' distances
+</span><span class="cmt">#     trees = main.find_trees()
+</span><span class="cmt">#     for tree in trees:
+</span><span class="cmt">#         main.hover(tree)
+</span><span class="cmt">#         print main.get_distance(main.get_screen_center_point(), main.get_point(tree))
+</span><span class="cmt">#     trees = main.get_sorted_trees(trees)
+</span><span class="cmt">#     for tree in trees:
+</span><span class="cmt">#         main.hover(tree)
+</span><span class="cmt">#         print main.get_distance(main.get_screen_center_point(), main.get_point(tree))
+</span><span class="cmt">#         sleep(1)
+</span>    <span class="cmt"># END
+</span>
+    <span class="cmt"># TEST: find closest tree, get to tree, come upfront
+</span><span class="cmt">#     main = CraftMain()
+</span><span class="cmt">#     tree = main.get_closest_tree()
+</span><span class="cmt">#     if main.go_to_tree_upfront(tree): 
+</span><span class="cmt">#         direction = main._get_direction_to_pivot()
+</span><span class="cmt">#         main._pivot_to(direction)
+</span><span class="cmt">#     else:
+</span><span class="cmt">#         assert False
+</span>    <span class="cmt"># END
+</span>
+    <span class="cmt"># TEST: clicking around closest tree
+</span>    <span class="str">'''
+    click_search = CraftSearch()
+    tree = click_search.get_closest_tree()
+    for direction in Direction.get_all_players_directions():
+        click_search.click_near_tree(tree, direction)
+        sleep(0.5)
+    '''</span>
+    <span class="cmt"># END TEST
+</span>
+    <span class="cmt"># TEST: is moving
+</span>    <span class="str">'''
+    main = CraftMain()
+    main.move()
+    assert not main.is_moving()
+    '''</span>
+    <span class="cmt"># END TEST
+</span>
+    <span class="cmt"># TEST: moving aroud tree and pivot to it
+</span>    <span class="str">'''
+    directions = Direction.get_all_players_directions()
+    directions.remove(Direction.S)
+    for direction in directions:
+        tree = main.get_closest_tree()
+        main.double_click_near_tree(tree, direction)
+        main.wait_for_stop()
+        direction_to_pivot = main._get_direction_to_pivot()
+        main._pivot_to(direction_to_pivot)
+        print main.get_player_direction(), Direction.get_opposite_direction(direction), direction
+        assert main.get_player_direction() == Direction.get_opposite_direction(direction)
+    #     break
+    main._get_direction_to_pivot()
+    '''</span>
+    <span class="cmt"># END TEST
+</span>
+    <span class="cmt"># TEST: moving aroud tree and is near
+</span>    <span class="str">'''
+    main = CraftMain()
+    for direction in [Direction.NE, Direction.SE, Direction.SW, Direction.NW]:
+        tree = main.get_closest_tree()
+        main.double_click_near_tree(tree, direction)
+        main.wait_for_stop()
+        tree = main.get_closest_tree()
+        assert main.is_near(tree)
+    '''</span>
+    <span class="cmt"># END TEST
+</span>
+    <span class="cmt"># TEST: hover over trees in 5 steps 
+</span><span class="cmt">#     trees = main.find_trees(False)
+</span><span class="cmt">#     for tree in trees:
+</span><span class="cmt">#         point = main.get_point(tree)
+</span><span class="cmt">#         is_inside = main.is_point_inside_5_step_area(point)
+</span><span class="cmt">#         main.hover(tree)
+</span><span class="cmt">#         main.log("tree",tree, "point", point, "is_ inside 5 steps", is_inside)
+</span><span class="cmt">#         sleep(1)
+</span><span class="cmt">#      
+</span><span class="cmt">#     len1 = len(main.find_trees(False))
+</span><span class="cmt">#     len2 = len(main.find_trees())
+</span><span class="cmt">#     main.log(len1)
+</span><span class="cmt">#     main.log(len2)
+</span>    <span class="cmt"># END TEST
+</span>
+    <span class="cmt"># Fighting part TODO
+</span>    ME_IN_FIGHT = Pattern(<img src="1390653549014.png" />).similar(<span class="dig">0.98</span>)
+    MAGIC = <img src="1390653583782.png" />
+    TACTICS = <img src="1390653630981.png" />
+    TACTICS_SET = <img src="1390653663133.png" />
+    INFO = <img src="1390653756325.png" />
+    TACTICS_INFO = <img src="1390654068037.png" />
+    KICK_BLOCK = <img src="1390654576784.png" />
+    BLOCK = <img src="1390654649957.png" />
+    BLOCK_1 = Pattern(<img src="1390762517989.png" />).similar(<span class="dig">0.90</span>)
+    BLOCK_2 = Pattern(<img src="1390762858437.png" />).similar(<span class="dig">0.90</span>)
+    BLOCK_3 = Pattern(<img src="1390762881045.png" />).similar(<span class="dig">0.90</span>)
+    BLOCK_4 = Pattern(<img src="1390762895399.png" />).similar(<span class="dig">0.90</span>)
+    APPLY = Pattern(<img src="1390762827772.png" />).similar(<span class="dig">0.90</span>)
+    <span class="cmt">#click(INFO)
+</span>    <span class="cmt">#wait(TACTICS)
+</span>    <span class="cmt">#click(TACTICS)
+</span>    <span class="cmt">#type(Key.DOWN*3+Key.TAB)
+</span>    <span class="cmt">#doubleClick(TACTICS_SET)
+</span>    <span class="cmt">#sleep(2)
+</span>    <span class="cmt">#click(TACTICS_INFO)
+</span>    <span class="cmt">#type("w", Key.CTRL)
+</span>    <span class="cmt">#click(KICK_BLOCK)
+</span>    <span class="cmt"># while(exists(ME_IN_FIGHT)):
+</span>    <span class="cmt">#     click(KICK_BLOCK)
+</span>    <span class="cmt">#     wait(BLOCK)
+</span>    <span class="cmt">#     click(BLOCK_1)
+</span>    <span class="cmt">#     click(BLOCK_2)
+</span>    <span class="cmt">#     click(BLOCK_3)
+</span>    <span class="cmt">#     click(BLOCK_4)
+</span>    <span class="cmt">#     while(exists(APPLY)):          
+</span>    <span class="cmt">#         click(APPLY)
+</span>    <span class="cmt">#     sleep(0.2)
+</span>    <span class="cmt">#     waitVanish(APPLY)
+</span>    <span class="cmt">#     wait(KICK_BLOCK, 3*60)</span>
+</pre>
+</body>
+</html>
